@@ -89,7 +89,7 @@ trapcleanup()
 
 main()
 {
-    trap trapcleanup EXIT INT TERM ERR
+    trap trapcleanup INT TERM ERR
     clear
 	echo "Run as sudo"
 
