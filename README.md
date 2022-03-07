@@ -44,8 +44,8 @@ EnMass3 is supposed to be used in a **legal** manner. We are not responsible for
 
 If you scan an IP range numerous times, you have the possibility of getting banned from your ISP. It is important to use a VPN while using EnMass3.
 ## Contributors
-[Republic of Hackers](https://discord.com/invite/repofhackers)
-[zer0uid](https://github.com/zer0uid)
-[Abr4Xa5](https://github.com/AbraXa5)
-[10splayaSec](https://github.com/10splayaSec)
-[kod3r](https://github.com/abhay-khattar)
+* [Republic of Hackers](https://discord.com/invite/repofhackers)
+* [zer0uid](https://github.com/zer0uid)
+* [Abr4Xa5](https://github.com/AbraXa5)
+* [10splayaSec](https://github.com/10splayaSec)
+* [kod3r](https://github.com/abhay-khattar)
