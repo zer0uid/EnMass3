@@ -41,7 +41,7 @@ File name: `input.txt`
 2. `sudo ./enmass3.sh [Input File]`
 3. Review `EnMass3_output.txt & EnMass3_output.json` files for vulnerable targets.
 
-** IMPORTANT: Use a VPN to avoid the possibility of getting your IP banned from your local ISP.**
+**IMPORTANT:** Use a VPN to avoid the possibility of getting your IP banned from your local ISP.
 
 ## Disclaimer
 EnMass3 is supposed to be used in a **legal** manner. We are not responsible for the actions the user takes while using this tool. Please use responsibly.
