@@ -115,11 +115,11 @@ function masscan_jsonOutput()
 
 function extractIp_jq()
 {
-    jq -r '.[].ip' masscan_output.json >> nrich_input_from_json
+    jq -r '.[].ip' masscan_output.json >> nrich_input.txt
 }
 
 
-function nrichScan_json()
+function nrich_scan_json()
 {
     nrich --output json nrich_input.txt 1>|./enmass3.json 2>|./nrich.error_log.log
 }
