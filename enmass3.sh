@@ -1,13 +1,20 @@
 #!/usr/bin/env bash
 
-#bash -n driver.sh 		# dry run for syntax
-#bash -v driver.sh 	# trace
-#bash -x driver.sh 	# more vergbose trace
+#bash -n driver.sh      # dry run for syntax
+#bash -v driver.sh  # trace
+#bash -x driver.sh  # more vergbose trace
 
 #Fail safe
 set -o errexit # fail on exit
 set -o nounset # fail on variable issues
 set -o pipefail # fail for pipe related stuff
+
+#Create a Log Directory
+function debug_dir()
+{
+    mkdir debug
+    printf "Creating a Directory for Debugging!!\n"    
+}
 
 
 function check_masscan()
@@ -24,7 +31,7 @@ function check_masscan()
         #cd /opt/masscan && make 1>/dev/null 2>depenadancies.error_log.log
         
         #using repo
-        apt install masscan 1>/dev/null 2>depenadancies.error_log.log
+        apt install masscan 1>/dev/null 2>./debug/depenadancies.error_log.log
         printf "Masscan Installed\n"
         exit
     else
@@ -46,7 +53,7 @@ function check_nrich()
         printf "installing nrich\n"
         apt install wget 1>/dev/null 2>depenadancies.error_log.log
         mkdir /opt/nrich && cd "$_" && wget https://gitlab.com/api/v4/projects/33695681/packages/generic/nrich/latest/nrich_latest_amd64.deb 1>/dev/null 2>depenadancies.error_log.log
-        apt install /opt/nrich/nrich_latest_amd64.deb 1>/dev/null 2>depenadancies.error_log.log
+        apt install /opt/nrich/nrich_latest_amd64.deb 1>/dev/null 2>./debug/depenadancies.error_log.log
         printf "Nrich Installed!"
         exit
     else
@@ -65,7 +72,7 @@ function check_jq()
         #jq not found installing jq 
         printf 'JQ not installed\n'
         printf "Installing jq\n"
-        apt install jq 1>/dev/null 2>depenadancies.error_log.log
+        apt install jq 1>/dev/null 2>./debug/depenadancies.error_log.log
         printf "jq Installed!"
         exit
     else
@@ -102,7 +109,7 @@ function check_inputFile()
 
 function masscan_jsonOutput()
 {
-    sudo masscan -iL "$1" --excludeFile AntiScanIPList.txt --top-ports 20 ---max-rate 100000 -oJ masscan_output.json 2>|./masscan.error_log.log
+    sudo masscan -iL "$1" --excludeFile AntiScanIPList.txt --top-ports 20 ---max-rate 100000 -oJ masscan_output.json 2>|./debug/masscan.error_log.log
 }
 
 
@@ -115,13 +122,13 @@ function masscan_jsonOutput()
 
 function extractIp_jq()
 {
-    jq -r '.[].ip' masscan_output.json >> nrich_input_from_json
+    jq -r '.[].ip' masscan_output.json >> nrich_input.txt
 }
 
 
-function nrichScan_json()
+function nrich_scan_json()
 {
-    nrich --output json nrich_input.txt 1>|./enmass3.json 2>|./nrich.error_log.log
+    nrich --output json nrich_input.txt 1>|./enmass3_output.json 2>|./debug/nrich.error_log.log
 }
 
 # function nrichScan_ndjson()
@@ -147,7 +154,7 @@ main()
     trap trapcleanup INT TERM ERR
     clear
 
-	# checking for sudo perms
+    # checking for sudo perms
     if [ "$EUID" -ne 0 ];then
         echo "Run the script as root"
         echo "Exitting..."
@@ -156,6 +163,9 @@ main()
 
     # checking if inputfile is provided as a parameter
     [[ "$#" -eq "0" ]] && { echo "No inputfile provided"; exit 1; } || { var=$1; echo -n "${var:?No file}" "being used as the input file"; echo ""; }
+    
+    # creating a debug directory
+    debug_dir
     
     # check depenadancies
     if check_masscan && check_nrich ; then
@@ -178,7 +188,7 @@ main()
             # running nrich
             nrich_scan_json
 
-            echo "Scanning complete! Look at enmass.json for the results"
+            echo "Scanning complete! Look at enmass3_output.json for the results"
             times
         fi
     fi
@@ -189,10 +199,10 @@ main()
 
 
 
-# set -x																	# set Debug
+# set -x                                                                    # set Debug
 # for source issues
 if ! (return 0 2> /dev/null); then 
     main "$@"
 fi
-# set +x																	# unset Debug
+# set +x                                                                    # unset Debug
 
