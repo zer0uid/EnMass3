@@ -121,7 +121,7 @@ function extractIp_jq()
 
 function nrich_scan_json()
 {
-    nrich --output json nrich_input.txt 1>|./enmass3.json 2>|./nrich.error_log.log
+    nrich --output json nrich_input.txt 1>|./enmass3_output.json 2>|./nrich.error_log.log
 }
 
 # function nrichScan_ndjson()
@@ -178,7 +178,7 @@ main()
             # running nrich
             nrich_scan_json
 
-            echo "Scanning complete! Look at enmass.json for the results"
+            echo "Scanning complete! Look at enmass3_output.json for the results"
             times
         fi
     fi
