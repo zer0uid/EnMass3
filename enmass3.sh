@@ -12,7 +12,7 @@ set -o pipefail # fail for pipe related stuff
 #Create a Log Directory
 function debug_dir()
 {
-    mkdir debug
+    mkdir ./"${1}"
     printf "Creating a Directory for Debugging!!\n"    
 }
 
@@ -51,8 +51,8 @@ function check_nrich()
         #installing masscan 
         printf 'Nrich not installed\n'
         printf "installing nrich\n"
-        apt install wget 1>/dev/null 2>depenadancies.error_log.log
-        mkdir /opt/nrich && cd "$_" && wget https://gitlab.com/api/v4/projects/33695681/packages/generic/nrich/latest/nrich_latest_amd64.deb 1>/dev/null 2>depenadancies.error_log.log
+        apt install wget 1>/dev/null 2>./debug/depenadancies.error_log.log
+        mkdir /opt/nrich && cd "$_" && wget https://gitlab.com/api/v4/projects/33695681/packages/generic/nrich/latest/nrich_latest_amd64.deb 1>/dev/null 2>./debug/depenadancies.error_log.log
         apt install /opt/nrich/nrich_latest_amd64.deb 1>/dev/null 2>./debug/depenadancies.error_log.log
         printf "Nrich Installed!"
         exit
@@ -109,7 +109,7 @@ function check_inputFile()
 
 function masscan_jsonOutput()
 {
-    sudo masscan -iL "$1" --excludeFile AntiScanIPList.txt --top-ports 20 ---max-rate 100000 -oJ masscan_output.json 2>|./debug/masscan.error_log.log
+    masscan -iL "$1" --excludeFile AntiScanIPList.txt --top-ports 20 --rate "${2}" --wait "${3}" -oJ masscan_output.json 2>|./"${4}"/masscan.error_log.log
 }
 
 
@@ -128,17 +128,17 @@ function extractIp_jq()
 
 function nrich_scan_json()
 {
-    nrich --output json nrich_input.txt 1>|./enmass3_output.json 2>|./debug/nrich.error_log.log
+    nrich --output json nrich_input.txt 1>|./enmass3_output.json 2>|./"${1}"/nrich.error_log.log
 }
 
 # function nrichScan_ndjson()
 # {
-#     nrich --output ndjson nrich_input.txt 1>|./enmass3.ndjson 2>|./nrich.error_log.log
+#     nrich --output ndjson nrich_input.txt 1>|./enmass3.ndjson 2>|./"${1}"/nrich.error_log.log
 # }
 
 # function nrichScan_shell()
 # {
-#     nrich --output shell nrich_input.txt 1>|./enmass3.txt 2>|./nrich.error_log.log
+#     nrich --output shell nrich_input.txt 1>|./enmass3.txt 2>|./"${1}"/nrich.error_log.log
 # }
 
 
@@ -164,29 +164,33 @@ main()
     # checking if inputfile is provided as a parameter
     [[ "$#" -eq "0" ]] && { echo "No inputfile provided"; exit 1; } || { var=$1; echo -n "${var:?No file}" "being used as the input file"; echo ""; }
     
+    # setting debug directory
+    debug_directory="debug"
+
     # creating a debug directory
-    debug_dir
+    debug_dir "${debug_directory}"
+
     
     # check depenadancies
-    if check_masscan && check_nrich ; then
+    if check_masscan && check_nrich && check_jq; then
         :
         #echo " -> All Dependancies Installed..."
         # check meta input file
-        if check_inputFile "$@" ; then
+        if check_inputFile "$1" ; then
             :
             #echo " -> All checks done"
 
             echo "Running masscan..."
             # running masscan
-            masscan_jsonOutput "$1"
-            
+            masscan_jsonOutput "$1" "300000" "3.7" "${debug_directory}"
+
             echo "Extracting Ips"
             # extracting ips from json output
             extractIp_jq
             
             echo "Running nrich..."
             # running nrich
-            nrich_scan_json
+            nrich_scan_json "${debug_directory}"
 
             echo "Scanning complete! Look at enmass3_output.json for the results"
             times
