@@ -126,20 +126,20 @@ function extractIp_jq()
 }
 
 
-function nrich_scan_json()
+function nrichScan_json()
 {
     nrich --output json nrich_input.txt 1>|./enmass3_output.json 2>|./"${1}"/nrich.error_log.log
 }
 
 # function nrichScan_ndjson()
 # {
-#     nrich --output ndjson nrich_input.txt 1>|./enmass3.ndjson 2>|./"${1}"/nrich.error_log.log
+#     nrich --output ndjson nrich_input.txt 1>|./enmass3_output.ndjson 2>|./"${1}"/nrich.error_log.log
 # }
 
-# function nrichScan_shell()
-# {
-#     nrich --output shell nrich_input.txt 1>|./enmass3.txt 2>|./"${1}"/nrich.error_log.log
-# }
+function nrichScan_shell()
+{
+    nrich --output shell nrich_input.txt 1>|./enmass3_output.txt 2>|./"${1}"/nrich.error_log.log
+}
 
 
 trapcleanup()
@@ -190,7 +190,7 @@ main()
             
             echo "Running nrich..."
             # running nrich
-            nrich_scan_json "${debug_directory}"
+            nrichScan_shell "${debug_directory}"
 
             echo "Scanning complete! Look at enmass3_output.json for the results"
             times
