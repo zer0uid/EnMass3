@@ -109,7 +109,7 @@ function check_inputFile()
 
 function masscan_jsonOutput()
 {
-    masscan -iL "$1" --excludeFile AntiScanIPList.txt --top-ports 20 --rate "${2}" --wait "${3}" -oJ masscan_output.json 2>|./"${4}"/masscan.error_log.log
+    masscan -iL "$1" --excludeFile AntiScanIPList.txt --top-ports --rate "${2}" --wait "${3}" -oJ masscan_output.json 2>|./"${4}"/masscan.error_log.log
 }
 
 
@@ -182,7 +182,7 @@ main()
 
             echo "Running masscan..."
             # running masscan
-            masscan_jsonOutput "$1" "300000" "3.7" "${debug_directory}"
+            masscan_jsonOutput "$1" "250000" "3.7" "${debug_directory}"
 
             echo "Extracting Ips"
             # extracting ips from json output
